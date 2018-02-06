@@ -6,7 +6,7 @@
 
 'use strict';
 
-const Recipe = require('../../../lib/Recipe');
+const Recipe = require('../../../../lib/Recipe');
 
 /**
  * [Rails description]
