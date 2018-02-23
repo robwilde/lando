@@ -31,3 +31,6 @@ _book
 # Build dirs
 build
 dist
+
+# Istanbul
+.nyc_output/
