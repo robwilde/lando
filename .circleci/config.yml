@@ -4,6 +4,8 @@ jobs:
     working_directory: ~/lando
     docker:
       - image: circleci/node:8.9.4
+    environment:
+      - LANDO_ENGINE_CONFIG: "{\"host\": \"${DOCKER_HOST}\"}"
     steps:
       - checkout
       - setup_remote_docker
