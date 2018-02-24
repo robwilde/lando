@@ -60,7 +60,9 @@ script:
 
   # Run code and styling
   - yarn test
-
+  
+  # Functional tests
+  - yarn test:functional
   # Make sure we can build the docs
   - yarn docs
 
