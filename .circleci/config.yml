@@ -4,11 +4,10 @@ jobs:
     working_directory: ~/lando
     docker:
       - image: circleci/node:8.9.4
-    environment:
-      - LANDO_ENGINE_CONFIG: {"host": "${DOCKER_HOST}"}
     steps:
       - checkout
       - setup_remote_docker
+      - run: 'export LANDO_ENGINE_CONFIG="{\"host\": \"$DOCKER_HOST\"}"'
       - run:
           name: Install deps
           command: yarn install
