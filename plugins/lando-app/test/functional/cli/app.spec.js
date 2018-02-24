@@ -12,6 +12,15 @@ chai.should();
 
 const Docker = require('dockerode');
 
+/**
+ * We can get ahead of Docker during tests sometimes.
+ */
+function waitForDocker(t, v) {
+  return new Promise(function(resolve) {
+    console.log('Waiting for Docker...');
+    setTimeout(resolve.bind(null, v), t);
+  });
+}
 
 describe('App Commands', function() {
   this.timeout(50000);
@@ -89,19 +98,20 @@ describe('App Commands', function() {
    * @todo: this fails on CircleCI
    */
   describe('#stop', function() {
-    it('Stops all containers on an app');
-      // return this.cliTest.execFile(this.executable, ['stop'], {cwd: this.appFolder}).then((res) => {
-      //   const nodeContainer = this.docker.getContainer('landotest_node_1');
-      //   nodeContainer.inspect(function(err, data) {
-      //     if (err) { throw err; }
-      //     return data.State.should.have.property('Status', 'exited');
-      //   });
-      //   const redisContainer = this.docker.getContainer('landotest_redis_1');
-      //   redisContainer.inspect(function(err, data) {
-      //     if (err) { throw err; }
-      //     return data.State.should.have.property('Status', 'exited');
-      //   });
-      // });
+    it('Stops all containers on an app', function() {
+      return this.cliTest.execFile(this.executable, ['stop'], {cwd: this.appFolder}).then(waitForDocker(5000)).then((res) => {
+        const nodeContainer = this.docker.getContainer('landotest_node_1');
+        nodeContainer.inspect(function(err, data) {
+          if (err) { throw err; }
+          return data.State.should.have.property('Status', 'exited');
+        });
+        const redisContainer = this.docker.getContainer('landotest_redis_1');
+        redisContainer.inspect(function(err, data) {
+          if (err) { throw err; }
+          return data.State.should.have.property('Status', 'exited');
+        });
+      });
+    });
   });
 
   /**
@@ -109,7 +119,7 @@ describe('App Commands', function() {
    */
   describe('#destroy', function() {
     it('Removes all containers', function() {
-      return this.cliTest.execFile(this.executable, ['destroy', '-y'], {cwd: this.appFolder})
+      return this.cliTest.execFile(this.executable, ['destroy', '-y'], {cwd: this.appFolder}).then(waitForDocker(5000))
       .then((res) => this.docker.listContainers((err, data) => {
           if (err) { throw err; }
           let ourCotainers = [];
@@ -143,13 +153,14 @@ describe('App Commands', function() {
     });
 
     // @todo: figure out why the fark this fails on CI only?!?!?!
-    it('shows info on all services');
-      // return this.cmd.then((res) => {
-      //   const data = JSON.parse(res.stdout);
-      //   data.should.have.property('redis');
-      //   data.redis.should.have.property('internal_connection');
-      //   return data.should.have.property('node');
-      // });
+    it('shows info on all services', function() {
+      return this.cmd.then(waitForDocker(5000)).then((res) => {
+        const data = JSON.parse(res.stdout);
+        data.should.have.property('redis');
+        data.redis.should.have.property('internal_connection');
+        return data.should.have.property('node');
+      });
+    });
   });
 
   /**
@@ -189,11 +200,16 @@ describe('App Commands', function() {
       );
 
       // Start first app
-      this.cliTest.execFile(this.executable, ['list'], {cwd: this.appFolder});
+      this.cliTest.execFile(this.executable, ['start'], {cwd: this.appFolder});
 
       // Start second app
+      this.cliTest.execFile(
+        this.executable, ['start'],
+        {cwd: this.secondAppFolder}
+      );
+
       this.cmd = this.cliTest
-        .execFile(this.executable, ['list'], {cwd: this.secondAppFolder});
+        .execFile(this.executable, ['list'], {cwd: this.secondAppFolder}).then(waitForDocker(5000));
     });
 
     it('returns json', function() {
