@@ -1,0 +1,29 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "content-length": "15",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Tue, 27 Feb 2018 23:38:14 GMT",
+    "etag": "W/\"f-v/Y1JusChTxrQUzPtNAKycooOTA\"",
+    "strict-transport-security": "max-age=0",
+    "x-correlation-id": "cbl32vc2ao6pebpdcg3obvw5",
+    "x-debug-info": "eyJyZXRyaWVzIjowfQ==",
+    "x-platform-cluster": "mqsdoc6tidkbg-master-7rqtwti",
+    "x-platform-processor": "mqsdoc6tidkbg-master-7rqtwti--metrics",
+    "x-platform-router": "mqsdoc6tidkbg-master-7rqtwti--router",
+    "x-powered-by": "Express"
+  },
+  "url": "http://metrics.devwithlando.io:443/metrics/v2/1be6c2c4-4d14-47fe-97bd-df565a6805d7",
+  "time": 679,
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Accept": "*/*",
+      "User-Agent": "Restler for node.js",
+      "Host": "metrics.devwithlando.io",
+      "Accept-Encoding": "gzip, deflate",
+      "content-type": "application/json",
+      "Content-Length": 336
+    }
+  }
+}

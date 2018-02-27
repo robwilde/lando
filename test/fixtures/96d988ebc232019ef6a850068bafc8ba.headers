@@ -1,0 +1,18 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "api-version": "1.35",
+    "content-type": "application/json",
+    "docker-experimental": "false",
+    "ostype": "linux",
+    "server": "Docker/17.12.0-ce (linux)",
+    "date": "Tue, 27 Feb 2018 23:38:12 GMT",
+    "transfer-encoding": "chunked"
+  },
+  "url": "http:http://127.0.0.1/containers/cbc17092495d033258110f5eb2e63a89cccced87b1a81103d40f158b92266768/json",
+  "time": 6,
+  "request": {
+    "method": "GET",
+    "headers": {}
+  }
+}

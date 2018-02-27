@@ -1,6 +1,5 @@
 'use strict';
 
-const CliTest = require('command-line-test');
 const chai = require('chai');
 const expect = chai.expect;
 const path = require('path');
@@ -8,19 +7,15 @@ const fs = require('fs');
 const os = require('os');
 const jsYaml = require('js-yaml');
 
+const helper = require(
+  path.resolve(
+    __dirname, '..', '..', '..', '..', '..', 'test', 'helpers', 'functional'
+  )
+);
+
 chai.should();
 
 const Docker = require('dockerode');
-
-/**
- * We can get ahead of Docker during tests sometimes.
- */
-function waitForDocker(t, v) {
-  return new Promise(function(resolve) {
-    console.log('Waiting for Docker...');
-    setTimeout(resolve.bind(null, v), t);
-  });
-}
 
 describe('App Commands', function() {
   this.timeout(50000);
@@ -57,17 +52,6 @@ describe('App Commands', function() {
       'utf8',
       (err) => { if (err) { throw err; } }
     );
-
-    // Use the entry-point in the app, not the globally installed Lando.
-    this.executable = path.resolve(
-      __dirname, '..', '..', '..', '..', '..', 'bin', 'lando.js'
-    );
-  });
-
-  // Get a fresh CLI command object before each test.
-  beforeEach(function() {
-    // We'll need this in all tests
-    this.cliTest = new CliTest();
   });
 
   /**
@@ -75,7 +59,7 @@ describe('App Commands', function() {
    */
   describe('#start', function() {
     it('Starts all containers on an app', function() {
-      return this.cliTest.execFile(this.executable, ['start'], {cwd: this.appFolder})
+      return helper.runCommand(['start'], {cwd: this.appFolder})
       .then((res) => {
         const nodeContainer = this.docker.getContainer('landotest_node_1');
         nodeContainer.inspect(function(err, data) {
@@ -99,7 +83,8 @@ describe('App Commands', function() {
    */
   describe('#stop', function() {
     it('Stops all containers on an app', function() {
-      return this.cliTest.execFile(this.executable, ['stop'], {cwd: this.appFolder}).then(waitForDocker(5000)).then((res) => {
+      return helper.runCommand(['stop'], {cwd: this.appFolder})
+      .then((res) => {
         const nodeContainer = this.docker.getContainer('landotest_node_1');
         nodeContainer.inspect(function(err, data) {
           if (err) { throw err; }
@@ -119,7 +104,7 @@ describe('App Commands', function() {
    */
   describe('#destroy', function() {
     it('Removes all containers', function() {
-      return this.cliTest.execFile(this.executable, ['destroy', '-y'], {cwd: this.appFolder}).then(waitForDocker(5000))
+      return helper.runCommand(['destroy', '-y'], {cwd: this.appFolder})
       .then((res) => this.docker.listContainers((err, data) => {
           if (err) { throw err; }
           let ourCotainers = [];
@@ -137,8 +122,7 @@ describe('App Commands', function() {
    */
   describe('#info', function() {
     before(function() {
-      this.cmd = this.cliTest
-        .execFile(this.executable, ['info'], {cwd: this.appFolder});
+      this.cmd = helper.runCommand(['info'], {cwd: this.appFolder});
     });
 
     it('returns json', function() {
@@ -154,7 +138,7 @@ describe('App Commands', function() {
 
     // @todo: figure out why the fark this fails on CI only?!?!?!
     it('shows info on all services', function() {
-      return this.cmd.then(waitForDocker(5000)).then((res) => {
+      return this.cmd.then((res) => {
         const data = JSON.parse(res.stdout);
         data.should.have.property('redis');
         data.redis.should.have.property('internal_connection');
@@ -200,16 +184,12 @@ describe('App Commands', function() {
       );
 
       // Start first app
-      this.cliTest.execFile(this.executable, ['start'], {cwd: this.appFolder});
+      helper.runCommand(['start'], {cwd: this.appFolder});
 
       // Start second app
-      this.cliTest.execFile(
-        this.executable, ['start'],
-        {cwd: this.secondAppFolder}
-      );
+      helper.runCommand(['start'], {cwd: this.secondAppFolder});
 
-      this.cmd = this.cliTest
-        .execFile(this.executable, ['list'], {cwd: this.secondAppFolder}).then(waitForDocker(5000));
+      this.cmd = helper.runCommand(['list'], {cwd: this.secondAppFolder});
     });
 
     it('returns json', function() {
@@ -240,8 +220,8 @@ describe('App Commands', function() {
   describe('#logs', function() {
     before(function() {
       // We need to make sure to start the app to get a bit of output to collect
-      this.cliTest.execFile(this.executable, ['start'], {cwd: this.appFolder});
-      this.cmd = this.cliTest.execFile(this.executable, ['logs'], {cwd: this.appFolder});
+      helper.runCommand(['start'], {cwd: this.appFolder});
+      this.cmd = helper.runCommand(['logs'], {cwd: this.appFolder});
     });
 
     it('shows logs for all containers');
@@ -278,11 +258,7 @@ describe('App Commands', function() {
    */
   describe('#poweroff', function() {
     before(function() {
-      this.cmd = this.cliTest.execFile(
-        this.executable,
-        ['poweroff'],
-        {cwd: this.appFolder}
-      );
+      this.cmd = helper.runCommand(['poweroff'], {cwd: this.appFolder});
     });
 
     it('powers down all containers including proxy');

@@ -22,6 +22,10 @@ var sudoBlock = require('sudo-block');
 var userConfRoot = path.join(os.homedir(), '.lando');
 var version = require(path.join(__dirname, '..', 'package.json')).version;
 
+// Allow us to override stuff in testing
+var replayer = require('replayer');
+replayer.fixtureDir(path.join(__dirname, '..', 'test', 'fixtures'));
+
 // Allow envvars to override a few core things
 var ENVPREFIX = process.env.LANDO_CORE_ENVPREFIX || 'LANDO_';
 var LOGLEVELCONSOLE = process.env.LANDO_CORE_LOGLEVELCONSOLE || 'warn';
