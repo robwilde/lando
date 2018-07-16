@@ -4,6 +4,15 @@ name: lemp2
 # Start with the default LEMP recipe
 recipe: lemp
 
+services:
+  # Override the appsever to add some environment variables and install an extra VIM package
+  appserver:
+    extras:
+      - "apt-get update -y"
+      - "apt-get upgrade -y"
+#      - "docker-php-ext-install pcntl"
+
+
 # Configure the LEMP recipe
 config:
 
