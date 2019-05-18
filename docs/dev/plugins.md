@@ -158,7 +158,7 @@ module.exports = lando => ({
       const app = lando.getApp(options._app.root);
       return app.init().then(() => app.power());
     } else {
-      lando.log.warn("MCFLY YOU BOJO! YOU KNOW HOVERBOARDS DON'T FLOAT ON WATER! UNLESS YOU'VE GOT POWERRRR!");
+      lando.log.warn("MCFLY YOU BOZO! YOU KNOW HOVERBOARDS DON'T FLOAT ON WATER! UNLESS YOU'VE GOT POWERRRR!");
     }
   },
 });
